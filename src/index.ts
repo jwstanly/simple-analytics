@@ -29,7 +29,7 @@ export default {
     const event: Event = {
       source:
         new URL(request.url).searchParams.get(SOURCE_PARAM) || DEFAULT_SOURCE,
-      ipAddress: request.headers.get('CF-Connecting-IP')!,
+      ipAddress: request.headers.get('CF-Connecting-IP') || 'Unknown',
       location: request.cf
         ? `${request.cf.city}, ${request.cf.region}, ${request.cf.country}`
         : 'Unknown',
