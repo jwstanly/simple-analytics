@@ -6,7 +6,7 @@ A Cloudflare Worker to track online analytics. The Worker's route serves an invi
 
 - Location
 - Time
-- Obfuscated IP address
+- Cloudflare origin IP address
 - A "source" parameter declared through the URL param
 
 #### Integrates with:
