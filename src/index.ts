@@ -6,8 +6,10 @@ export interface Env {
   TRACKING: KVNamespace;
 
   // Environment variables. Learn more at https://developers.cloudflare.com/workers/platform/environment-variables/
+  SOURCE_QUERY_PARAM: string;
   GA4_MEASUREMENT_ID: string;
   GA4_API_SECRET: string;
+  GA4_EVENT_NAME: string;
 }
 
 export interface Event {
@@ -17,9 +19,6 @@ export interface Event {
   time: string;
 }
 
-export const SOURCE_PARAM = 'k';
-export const DEFAULT_SOURCE = 'default';
-
 export default {
   async fetch(
     request: Request,
@@ -28,7 +27,8 @@ export default {
   ): Promise<Response> {
     const event: Event = {
       source:
-        new URL(request.url).searchParams.get(SOURCE_PARAM) || DEFAULT_SOURCE,
+        new URL(request.url).searchParams.get(env.SOURCE_QUERY_PARAM) ||
+        'Unknown',
       ipAddress: request.headers.get('CF-Connecting-IP') || 'Unknown',
       location: request.cf
         ? `${request.cf.city}, ${request.cf.region}, ${request.cf.country}`
@@ -41,6 +41,7 @@ export default {
         event,
         ga4_measurement_id: env.GA4_MEASUREMENT_ID,
         ga4_api_secret: env.GA4_API_SECRET,
+        ga4_event_name: env.GA4_EVENT_NAME,
       }),
       storeEventInCloudflareKV({
         event,

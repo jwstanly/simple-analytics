@@ -3,9 +3,12 @@ main = "src/index.ts"
 compatibility_date = "2023-08-09"
 
 kv_namespaces = [
-  { binding = "TRACKING", id = "NAMESPACE_ID_HERE" }
+  { binding = "TRACKING", id = "<NAMESPACE_ID_HERE>" }
 ]
 
 [vars]
-GA4_MEASUREMENT_ID = "GA4_MEASUREMENT_ID_HERE"
-GA4_API_SECRET = "GA4_API_SECRET_HERE"
+SOURCE_QUERY_PARAM = "s"
+
+GA4_MEASUREMENT_ID = "<GA4_MEASUREMENT_ID_HERE>"
+GA4_API_SECRET = "<GA4_API_SECRET_HERE>"
+GA4_EVENT_NAME = "email_opened"
