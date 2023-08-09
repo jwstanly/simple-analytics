@@ -1,3 +1,7 @@
+# Wrangler config with KV namespace
+
+wrangler.toml
+
 # Logs
 
 logs

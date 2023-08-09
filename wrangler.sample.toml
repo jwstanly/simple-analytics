@@ -1,3 +1,7 @@
 name = "my-project"
 main = "src/index.ts"
 compatibility_date = "2023-08-09"
+
+kv_namespaces = [
+  { binding = "TRACKING", id = "NAMESPACE_ID_HERE" }
+]
