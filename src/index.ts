@@ -28,6 +28,10 @@ export default {
     env: Env,
     ctx: ExecutionContext,
   ): Promise<Response> {
-    return new Response('Hello World!');
+    return new Response(null, {
+      headers: {
+        'Content-Type': 'image/png',
+      },
+    });
   },
 };
