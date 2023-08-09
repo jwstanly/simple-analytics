@@ -22,12 +22,38 @@ export interface Env {
   // MY_SERVICE: Fetcher;
 }
 
+interface SourceEvents {
+  [userIp: string]: {
+    location: string;
+    eventTimes: string[];
+  };
+}
+
 export default {
   async fetch(
     request: Request,
     env: Env,
     ctx: ExecutionContext,
   ): Promise<Response> {
+    const source =
+      new URL(request.url).searchParams.get(SOURCE_PARAM) || DEFAULT_SOURCE;
+
+    const events: SourceEvents = JSON.parse(
+      (await env.TRACKING.get(source)) || '{}',
+    );
+
+    const userIp = request.headers.get('CF-Connecting-IP')!;
+
+    events[userIp] = {
+      location: `${request.cf?.city}, ${request.cf?.region} ${request.cf?.country}`,
+      eventTimes: [
+        ...(events[userIp]?.eventTimes || []),
+        new Date().toLocaleString(),
+      ],
+    };
+
+    env.TRACKING.put(source, JSON.stringify(events));
+
     return new Response(TRANSPARENT_1X1_PIXEL, {
       headers: {
         'Content-Type': 'image/png',
@@ -38,6 +64,9 @@ export default {
     });
   },
 };
+
+const SOURCE_PARAM = 'k';
+const DEFAULT_SOURCE = 'default';
 
 const TRANSPARENT_1X1_PIXEL = new Uint8Array([
   0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0x00, 0x00, 0x00, 0x0d, 0x49,
