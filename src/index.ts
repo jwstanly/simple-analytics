@@ -20,13 +20,9 @@ export interface Env {
   //
   // Example binding to a Service. Learn more at https://developers.cloudflare.com/workers/runtime-apis/service-bindings/
   // MY_SERVICE: Fetcher;
-}
 
-interface SourceEvents {
-  [userIp: string]: {
-    location: string;
-    eventTimes: string[];
-  };
+  GA4_MEASUREMENT_ID: string;
+  GA4_API_SECRET: string;
 }
 
 export default {
@@ -37,22 +33,25 @@ export default {
   ): Promise<Response> {
     const source =
       new URL(request.url).searchParams.get(SOURCE_PARAM) || DEFAULT_SOURCE;
+    const ipAddress = request.headers.get('CF-Connecting-IP')!;
+    const location = request.cf
+      ? `${request.cf.city}, ${request.cf.region}, ${request.cf.country}`
+      : 'Unknown';
+    const time = new Date().toLocaleString();
 
-    const events: SourceEvents = JSON.parse(
-      (await env.TRACKING.get(source)) || '{}',
-    );
+    const event: Event = { source, ipAddress, location, time };
 
-    const userIp = request.headers.get('CF-Connecting-IP')!;
-
-    events[userIp] = {
-      location: `${request.cf?.city}, ${request.cf?.region} ${request.cf?.country}`,
-      eventTimes: [
-        ...(events[userIp]?.eventTimes || []),
-        new Date().toLocaleString(),
-      ],
-    };
-
-    env.TRACKING.put(source, JSON.stringify(events));
+    await Promise.all([
+      forwardEventToGoogleAnalytics4({
+        event,
+        ga4_measurement_id: env.GA4_MEASUREMENT_ID,
+        ga4_api_secret: env.GA4_API_SECRET,
+      }),
+      storeEventInCloudflareKV({
+        event,
+        kv_namespace: env.TRACKING,
+      }),
+    ]);
 
     return new Response(TRANSPARENT_1X1_PIXEL, {
       headers: {
@@ -65,8 +64,72 @@ export default {
   },
 };
 
+async function forwardEventToGoogleAnalytics4({
+  event,
+  ga4_measurement_id,
+  ga4_api_secret,
+}: {
+  event: Event;
+  ga4_measurement_id: string;
+  ga4_api_secret: string;
+}) {
+  await fetch(
+    `https://www.google-analytics.com/mp/collect?measurement_id=${ga4_measurement_id}&api_secret=${ga4_api_secret}`,
+    {
+      method: 'POST',
+      body: JSON.stringify({
+        client_id: event.ipAddress,
+        events: [
+          {
+            name: GA4_EVENT_NAME,
+            params: event,
+          },
+        ],
+      }),
+    },
+  );
+}
+
+async function storeEventInCloudflareKV({
+  event,
+  kv_namespace,
+}: {
+  event: Event;
+  kv_namespace: KVNamespace;
+}) {
+  const eventsForSource: SourceEventsKvEntry = JSON.parse(
+    (await kv_namespace.get(event.source)) || '{}',
+  );
+
+  eventsForSource[event.ipAddress] = {
+    location: event.location,
+    eventTimes: [
+      ...(eventsForSource[event.ipAddress]?.eventTimes || []),
+      new Date().toLocaleString(),
+    ],
+  };
+
+  kv_namespace.put(event.source, JSON.stringify(eventsForSource));
+}
+
+interface Event {
+  source: string;
+  ipAddress: string;
+  location: string;
+  time: string;
+}
+
+interface SourceEventsKvEntry {
+  [ipAddress: string]: {
+    location: string;
+    eventTimes: string[];
+  };
+}
+
 const SOURCE_PARAM = 'k';
 const DEFAULT_SOURCE = 'default';
+
+const GA4_EVENT_NAME = 'email_opened';
 
 const TRANSPARENT_1X1_PIXEL = new Uint8Array([
   0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0x00, 0x00, 0x00, 0x0d, 0x49,
