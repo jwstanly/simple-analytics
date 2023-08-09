@@ -18,13 +18,27 @@ A Cloudflare Worker to track online analytics. The Worker's route serves an invi
 1. Google Analytics - Forward events to GA4
 2. Cloudflare KV - Persist events in a KV namespace
 
-#### Setup:
+## Setup:
 
 1. Install Cloudflare's Wrangler CLI ([more details](https://developers.cloudflare.com/workers/wrangler/install-and-update/#install-wrangler-globally)). Make sure you have v2.0.0+.
 2. [Optional] For Google Analytics, in `wrangler.sample.toml` replace `<GA4_MEASUREMENT_ID_HERE>` and `<GA4_API_SECRET_HERE>` with your existing GA4 measurement id and API secret key ([more details](https://developers.google.com/analytics/devguides/collection/protocol/ga4/reference?client_type=gtag#payload_query_parameters)).
 3. [Optional] For Cloudflare KV, create a KV namespace ([more details](https://developers.cloudflare.com/workers/runtime-apis/kv/#:~:text=To%20use%20Workers%20KV%2C%20you,select%20Workers%20%26%20Pages%20%3E%20KV.)). Then in `wrangler.sample.toml` replace `<NAMESPACE_ID_HERE>` with your KV namespace id ([more details](https://developers.cloudflare.com/workers/configuration/bindings/#kv-namespace-bindings)).
 4. Edit your project's default `name` and `SOURCE_QUERY_PARAM` to your liking in `wrangler.sample.toml`. Note `name` publicly appears in the route's subdomain and `SOURCE_QUERY_PARAM` as the URL query parameter (example: https://my-project.jwstanly.workers.dev/?s=custom-source-tracking-here).
 5. Rename `wrangler.sample.toml` file to `wrangler.toml`
-6. Run `wrangler deploy` in your terminal
+6. Run `wrangler deploy` in your terminal. Any requests to your Worker's route will now be tracked.
 
-Any requests to your Worker's image will now be tracked. For Google Analytics on the dashboard go to **Reports -> Engagement -> Events**. For KV on the Cloudflare dashboard go to **Workers & Pages -> KV -> Tracking (View)**.
+#### Usage
+
+Add your Worker's route as an image to whatever platform:
+
+```
+https://<PROJECT-NAME>.<CLOUDFLARE-USERNAME>.workers.dev
+```
+
+Add source paramaters to track custom events:
+
+```
+https://<PROJECT-NAME>.<CLOUDFLARE-USERNAME>.workers.dev/?<SOURCE_QUERY_PARAM>=<CLOUDFLARE-USERNAME>
+```
+
+For Google Analytics on the dashboard go to **Reports -> Engagement -> Events**. For KV on the Cloudflare dashboard go to **Workers & Pages -> KV -> Tracking (View)**.
