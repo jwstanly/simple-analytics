@@ -1,6 +1,6 @@
 ## Simple Analytics
 
-A Cloudflare Worker to track online analytics. The Worker's route serves an invisible 1x1 PNG, which tracks clients that load the image on web, email, mobile, etc.
+A Cloudflare Worker to track online analytics. The Worker's URL serves an invisible 1x1 PNG, which tracks clients that load the image on web, email, mobile, etc.
 
 #### Tracks:
 
@@ -17,21 +17,21 @@ A Cloudflare Worker to track online analytics. The Worker's route serves an invi
 ## Setup:
 
 1. Install Cloudflare's Wrangler CLI v2.0.0+ ([more details](https://developers.cloudflare.com/workers/wrangler/install-and-update/#install-wrangler-globally)). Run `wrangler config` to connect your Cloudflare account.
-2. [Optional] For Google Analytics, in `wrangler.sample.toml` replace `<GA4_MEASUREMENT_ID_HERE>` and `<GA4_API_SECRET_HERE>` with your existing GA4 measurement id and API secret key ([more details](https://developers.google.com/analytics/devguides/collection/protocol/ga4/reference?client_type=gtag#payload_query_parameters)).
-3. [Optional] For Cloudflare KV, create a KV namespace ([more details](https://developers.cloudflare.com/workers/runtime-apis/kv/#:~:text=To%20use%20Workers%20KV%2C%20you,select%20Workers%20%26%20Pages%20%3E%20KV.)). Then in `wrangler.sample.toml` replace `<NAMESPACE_ID_HERE>` with your KV namespace id ([more details](https://developers.cloudflare.com/workers/configuration/bindings/#kv-namespace-bindings)).
-4. Edit your project's default `name` and `SOURCE_QUERY_PARAM` to your liking in `wrangler.sample.toml`. Note `name` publicly appears in the route's subdomain and `SOURCE_QUERY_PARAM` as the URL query parameter (example: https://my-project.jwstanly.workers.dev/?s=custom-source-tracking-here).
-5. Rename `wrangler.sample.toml` file to `wrangler.toml`
-6. Run `wrangler deploy` in your terminal. Any requests to your Worker's route will now be tracked.
+2. Rename `wrangler.sample.toml` file to `wrangler.toml`
+3. [Optional] For Google Analytics, in `wrangler.toml` add your GA4 measurement id and API secret key ([more details](https://developers.google.com/analytics/devguides/collection/protocol/ga4/reference?client_type=gtag#payload_query_parameters)).
+4. [Optional] For Cloudflare KV, create a KV namespace ([more details](https://developers.cloudflare.com/workers/runtime-apis/kv/#:~:text=To%20use%20Workers%20KV%2C%20you,select%20Workers%20%26%20Pages%20%3E%20KV.)). Then in `wrangler.toml` add your KV namespace id to bind your Worker to this namespace ([more details](https://developers.cloudflare.com/workers/configuration/bindings/#kv-namespace-bindings)).
+5. Tweak the rest of `wrangler.toml` config as needed. You can change the Cloudflare project's `name` (appears in the public URL's subdomain), plus environment variables `SOURCE_QUERY_PARAM` (the URL query param name to specify source), `PNG_BASE64` (the base64 encoded PNG to serve, by default a 1x1 transparent PNG), and `GA4_EVENT_NAME` (the event name for Google Analytics).
+6. Run `wrangler deploy` in your terminal. Your Worker will now be live, any requests will be tracked.
 
 #### Usage
 
-Your Worker's route follows this pattern. Optionally add the query parameter to track custom sources:
+Your Worker's URL follows this pattern. Optionally add the query parameter to track custom sources:
 
 ```
 https://<PROJECT-NAME>.<CLOUDFLARE-USERNAME>.workers.dev/?<SOURCE_QUERY_PARAM>=<CUSTOM_SOURCE_HERE>
 ```
 
-Use the route as an image source on any platform, like HTML:
+Use the URL as an image source on any platform, like HTML:
 
 ```
 <img src="https://my-project.jwstanly.workers.dev/?s=custom-source-tracking-here">
