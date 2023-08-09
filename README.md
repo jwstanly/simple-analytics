@@ -1,6 +1,6 @@
 ## Simple Analytics
 
-A Cloudflare Worker that tracks online analytics. The Worker's route serves an invisible 1x1 PNG, which tracks clients that load the image on web, email, mobile, etc.
+A Cloudflare Worker to track online analytics. The Worker's route serves an invisible 1x1 PNG, which tracks clients that load the image on web, email, mobile, etc.
 
 ```
 <img src="https://my-project.jwstanly.workers.dev/?s=custom-source-tracking-here">
@@ -26,3 +26,5 @@ A Cloudflare Worker that tracks online analytics. The Worker's route serves an i
 4. Edit your project's default `name` and `SOURCE_QUERY_PARAM` to your liking in `wrangler.sample.toml`. Note `name` publicly appears in the route's subdomain and `SOURCE_QUERY_PARAM` as the URL query parameter (example: https://my-project.jwstanly.workers.dev/?s=custom-source-tracking-here).
 5. Rename `wrangler.sample.toml` file to `wrangler.toml`
 6. Run `wrangler deploy` in your terminal
+
+Any requests to your Worker's image will now be tracked. For Google Analytics on the dashboard go to **Reports -> Engagement -> Events**. For KV on the Cloudflare dashboard go to **Workers & Pages -> KV -> Tracking (View)**.
