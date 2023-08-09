@@ -50,7 +50,7 @@ export default {
       }),
     ]);
 
-    // Transparent 1x1 PNG image
+    // Serve PNG image
     return new Response(
       new Uint8Array(
         [...atob(env.PNG_BASE64)].map((char) => char.charCodeAt(0)),
