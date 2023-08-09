@@ -25,13 +25,7 @@ A Cloudflare Worker to track online analytics. The Worker's route serves an invi
 
 #### Usage
 
-Your Worker's route follows this pattern:
-
-```
-https://<PROJECT-NAME>.<CLOUDFLARE-USERNAME>.workers.dev
-```
-
-To track custom sources, add the query parameter (optional):
+Your Worker's route follows this pattern. Optionally add the query parameter to track custom sources:
 
 ```
 https://<PROJECT-NAME>.<CLOUDFLARE-USERNAME>.workers.dev/?<SOURCE_QUERY_PARAM>=<CUSTOM_SOURCE_HERE>
