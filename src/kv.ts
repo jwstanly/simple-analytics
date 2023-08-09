@@ -1,5 +1,12 @@
 import type { Event } from './index';
 
+interface SourceEventsKvEntry {
+  [ipAddress: string]: {
+    location: string;
+    eventTimes: string[];
+  };
+}
+
 export async function storeEventInCloudflareKV({
   event,
   kv_namespace,
@@ -20,11 +27,4 @@ export async function storeEventInCloudflareKV({
   };
 
   kv_namespace.put(event.source, JSON.stringify(eventsForSource));
-}
-
-interface SourceEventsKvEntry {
-  [ipAddress: string]: {
-    location: string;
-    eventTimes: string[];
-  };
 }
