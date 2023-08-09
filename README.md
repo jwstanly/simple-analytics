@@ -25,16 +25,22 @@ A Cloudflare Worker to track online analytics. The Worker's route serves an invi
 
 #### Usage
 
-Add your Worker's route as an image to whatever platform:
+Your Worker's route follows this pattern:
 
 ```
 https://<PROJECT-NAME>.<CLOUDFLARE-USERNAME>.workers.dev
 ```
 
-Add source paramaters to track custom events:
+To track custom sources, add the query parameter (optional):
 
 ```
-https://<PROJECT-NAME>.<CLOUDFLARE-USERNAME>.workers.dev/?<SOURCE_QUERY_PARAM>=<CLOUDFLARE-USERNAME>
+https://<PROJECT-NAME>.<CLOUDFLARE-USERNAME>.workers.dev/?<SOURCE_QUERY_PARAM>=<CUSTOM_SOURCE_HERE>
+```
+
+Use the route as an image source on any platform, like HTML:
+
+```
+<img src="https://my-project.jwstanly.workers.dev/?s=custom-source-tracking-here">
 ```
 
 For Google Analytics on the dashboard go to **Reports -> Engagement -> Events**. For KV on the Cloudflare dashboard go to **Workers & Pages -> KV -> Tracking (View)**.
