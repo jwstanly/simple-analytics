@@ -2,24 +2,24 @@ import type { Event } from './index';
 
 export async function forwardEventToGoogleAnalytics4({
   event,
-  ga4_measurement_id,
-  ga4_api_secret,
-  ga4_event_name,
+  ga4MeasurementId,
+  ga4ApiSecret,
+  ga4EventName,
 }: {
   event: Event;
-  ga4_measurement_id: string;
-  ga4_api_secret: string;
-  ga4_event_name: string;
+  ga4MeasurementId: string;
+  ga4ApiSecret: string;
+  ga4EventName: string;
 }) {
   await fetch(
-    `https://www.google-analytics.com/mp/collect?measurement_id=${ga4_measurement_id}&api_secret=${ga4_api_secret}`,
+    `https://www.google-analytics.com/mp/collect?measurement_id=${ga4MeasurementId}&api_secret=${ga4ApiSecret}`,
     {
       method: 'POST',
       body: JSON.stringify({
         client_id: event.ipAddress,
         events: [
           {
-            name: ga4_event_name,
+            name: ga4EventName,
             params: event,
           },
         ],

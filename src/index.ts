@@ -39,13 +39,13 @@ export default {
     await Promise.all([
       forwardEventToGoogleAnalytics4({
         event,
-        ga4_measurement_id: env.GA4_MEASUREMENT_ID,
-        ga4_api_secret: env.GA4_API_SECRET,
-        ga4_event_name: env.GA4_EVENT_NAME,
+        ga4MeasurementId: env.GA4_MEASUREMENT_ID,
+        ga4ApiSecret: env.GA4_API_SECRET,
+        ga4EventName: env.GA4_EVENT_NAME,
       }),
       storeEventInCloudflareKV({
         event,
-        kv_namespace: env.TRACKING,
+        kvNamespace: env.TRACKING,
       }),
     ]);
 

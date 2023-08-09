@@ -9,13 +9,13 @@ interface SourceEventsKvEntry {
 
 export async function storeEventInCloudflareKV({
   event,
-  kv_namespace,
+  kvNamespace,
 }: {
   event: Event;
-  kv_namespace: KVNamespace;
+  kvNamespace: KVNamespace;
 }) {
   const eventsForSource: SourceEventsKvEntry = JSON.parse(
-    (await kv_namespace.get(event.source)) || '{}',
+    (await kvNamespace.get(event.source)) || '{}',
   );
 
   eventsForSource[event.ipAddress] = {
@@ -26,5 +26,5 @@ export async function storeEventInCloudflareKV({
     ],
   };
 
-  kv_namespace.put(event.source, JSON.stringify(eventsForSource));
+  kvNamespace.put(event.source, JSON.stringify(eventsForSource));
 }
