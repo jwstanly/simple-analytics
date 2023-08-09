@@ -8,6 +8,9 @@
  * Learn more at https://developers.cloudflare.com/workers/
  */
 
+import { forwardEventToGoogleAnalytics4 } from './ga';
+import { storeEventInCloudflareKV } from './kv';
+
 export interface Env {
   // Example binding to KV. Learn more at https://developers.cloudflare.com/workers/runtime-apis/kv/
   TRACKING: KVNamespace;
@@ -64,72 +67,15 @@ export default {
   },
 };
 
-async function forwardEventToGoogleAnalytics4({
-  event,
-  ga4_measurement_id,
-  ga4_api_secret,
-}: {
-  event: Event;
-  ga4_measurement_id: string;
-  ga4_api_secret: string;
-}) {
-  await fetch(
-    `https://www.google-analytics.com/mp/collect?measurement_id=${ga4_measurement_id}&api_secret=${ga4_api_secret}`,
-    {
-      method: 'POST',
-      body: JSON.stringify({
-        client_id: event.ipAddress,
-        events: [
-          {
-            name: GA4_EVENT_NAME,
-            params: event,
-          },
-        ],
-      }),
-    },
-  );
-}
-
-async function storeEventInCloudflareKV({
-  event,
-  kv_namespace,
-}: {
-  event: Event;
-  kv_namespace: KVNamespace;
-}) {
-  const eventsForSource: SourceEventsKvEntry = JSON.parse(
-    (await kv_namespace.get(event.source)) || '{}',
-  );
-
-  eventsForSource[event.ipAddress] = {
-    location: event.location,
-    eventTimes: [
-      ...(eventsForSource[event.ipAddress]?.eventTimes || []),
-      new Date().toLocaleString(),
-    ],
-  };
-
-  kv_namespace.put(event.source, JSON.stringify(eventsForSource));
-}
-
-interface Event {
+export interface Event {
   source: string;
   ipAddress: string;
   location: string;
   time: string;
 }
 
-interface SourceEventsKvEntry {
-  [ipAddress: string]: {
-    location: string;
-    eventTimes: string[];
-  };
-}
-
 const SOURCE_PARAM = 'k';
 const DEFAULT_SOURCE = 'default';
-
-const GA4_EVENT_NAME = 'email_opened';
 
 const TRANSPARENT_1X1_PIXEL = new Uint8Array([
   0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0x00, 0x00, 0x00, 0x0d, 0x49,
