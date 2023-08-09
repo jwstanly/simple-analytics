@@ -2,10 +2,6 @@
 
 A Cloudflare Worker to track online analytics. The Worker's route serves an invisible 1x1 PNG, which tracks clients that load the image on web, email, mobile, etc.
 
-```
-<img src="https://my-project.jwstanly.workers.dev/?s=custom-source-tracking-here">
-```
-
 #### Tracks:
 
 - Location
